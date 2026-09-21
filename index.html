@@ -9,14 +9,17 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- Library untuk membuat QR -->
+    <!-- Library QR -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 </head>
 
 <body>
 
-    <!-- HALAMAN AWAL -->
+    <!-- ========================= -->
+    <!-- HALAMAN ABSENSI -->
+    <!-- ========================= -->
+
     <div class="container" id="halamanAwal">
 
         <div class="card">
@@ -25,7 +28,9 @@
 
             <h1>Absensi QR</h1>
 
-            <p>Masukkan NPM untuk membuat QR Absensi</p>
+            <p>
+                Masukkan NPM untuk membuat QR Absensi
+            </p>
 
             <input
                 type="text"
@@ -39,14 +44,21 @@
 
             <p id="pesan"></p>
 
-            <!-- QR YANG DIBUAT -->
-            <div id="bagianQR" style="display: none;">
+
+            <!-- ========================= -->
+            <!-- QR -->
+            <!-- ========================= -->
+
+            <div
+                id="bagianQR"
+                style="display: none;"
+            >
 
                 <h2>QR Absensi</h2>
 
                 <p>
                     Tampilkan QR ini pada layar lain,
-                    kemudian scan menggunakan kamera HP.
+                    kemudian scan menggunakan HP.
                 </p>
 
                 <div id="qrcode"></div>
@@ -57,15 +69,25 @@
 
             </div>
 
+
+            <!-- ========================= -->
             <!-- SCANNER -->
-            <div id="scanner" style="display: none;"></div>
+            <!-- ========================= -->
+
+            <div
+                id="scanner"
+                style="display: none;"
+            ></div>
 
         </div>
 
     </div>
 
 
-    <!-- HALAMAN BERHASIL -->
+    <!-- ========================= -->
+    <!-- HALAMAN ABSENSI BERHASIL -->
+    <!-- ========================= -->
+
     <div
         class="container"
         id="halamanBerhasil"
@@ -85,6 +107,7 @@
             <p class="success-text">
                 Data absensi kamu berhasil dicatat.
             </p>
+
 
             <div class="data-absensi">
 
@@ -120,9 +143,11 @@
 
                 <div class="data-row">
                     <span>Status</span>
+
                     <strong class="hadir">
                         HADIR
                     </strong>
+
                 </div>
 
             </div>
@@ -132,13 +157,397 @@
     </div>
 
 
-    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+    <!-- DAFTAR MAHASISWA ABSEN -->
+    <!-- ========================= -->
+
+    <div
+        class="container"
+        style="
+            min-height: auto;
+            padding-top: 0;
+            align-items: flex-start;
+        "
+    >
+
+        <div
+            class="card"
+            style="
+                max-width: 1100px;
+                overflow: hidden;
+            "
+        >
+
+            <div class="icon">
+                📋
+            </div>
+
+            <h2>
+                Daftar Mahasiswa Sudah Absen
+            </h2>
+
+            <p>
+                Daftar mahasiswa yang sudah melakukan absensi.
+            </p>
+
+
+            <!-- Pesan Rekap -->
+
+            <p
+                id="pesanRekap"
+                style="
+                    margin-top: 10px;
+                    color: #6b7280;
+                "
+            >
+                Memuat data...
+            </p>
+
+
+            <!-- TABEL -->
+
+            <div
+                style="
+                    width: 100%;
+                    overflow-x: auto;
+                    margin-top: 20px;
+                "
+            >
+
+                <table
+                    style="
+                        width: 100%;
+                        min-width: 900px;
+                        border-collapse: collapse;
+                        background: white;
+                    "
+                >
+
+                    <thead>
+
+                        <tr
+                            style="
+                                background: #2563eb;
+                                color: white;
+                            "
+                        >
+
+                            <th style="padding: 12px;">
+                                No
+                            </th>
+
+                            <th style="padding: 12px;">
+                                NPM
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Nama
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Mata Kuliah
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Pertemuan
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Tanggal
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Waktu
+                            </th>
+
+                            <th style="padding: 12px;">
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="daftarAbsensi">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                style="
+                                    padding: 20px;
+                                    text-align: center;
+                                "
+                            >
+                                Memuat data...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- LIBRARY SCANNER -->
+    <!-- ========================= -->
+
     <script src="https://unpkg.com/html5-qrcode"></script>
+
+
+    <!-- ========================= -->
+    <!-- SCRIPT UTAMA -->
+    <!-- ========================= -->
 
     <script
         type="module"
         src="script.js"
     ></script>
+
+
+    <!-- ========================= -->
+    <!-- TAMPILKAN DATA FIREBASE -->
+    <!-- ========================= -->
+
+    <script type="module">
+
+        import { db }
+        from "./firebase-config.js";
+
+        import {
+            collection,
+            getDocs
+        }
+        from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+        async function tampilkanDaftarAbsensi() {
+
+            const tabel =
+                document.getElementById(
+                    "daftarAbsensi"
+                );
+
+            const pesan =
+                document.getElementById(
+                    "pesanRekap"
+                );
+
+
+            try {
+
+                const snapshot =
+                    await getDocs(
+                        collection(
+                            db,
+                            "absensi"
+                        )
+                    );
+
+
+                if (snapshot.empty) {
+
+                    tabel.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="8"
+                                style="
+                                    padding: 20px;
+                                    text-align: center;
+                                "
+                            >
+                                Belum ada mahasiswa yang absen.
+                            </td>
+                        </tr>
+                    `;
+
+                    pesan.textContent =
+                        "Belum ada data absensi.";
+
+                    return;
+                }
+
+
+                tabel.innerHTML = "";
+
+                let nomor = 1;
+
+
+                snapshot.forEach(
+                    function(doc) {
+
+                        const data =
+                            doc.data();
+
+
+                        const baris =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        baris.innerHTML = `
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${nomor}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.nim || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.nama || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.mataKuliah || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.pertemuan || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.tanggal || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                ${data.waktu || "-"}
+                            </td>
+
+                            <td
+                                style="
+                                    padding: 12px;
+                                    text-align: center;
+                                    border-bottom: 1px solid #e5e7eb;
+                                "
+                            >
+                                <span
+                                    style="
+                                        background: #dcfce7;
+                                        color: #16a34a;
+                                        padding: 6px 12px;
+                                        border-radius: 20px;
+                                        font-weight: bold;
+                                        font-size: 12px;
+                                    "
+                                >
+                                    ${data.status || "HADIR"}
+                                </span>
+                            </td>
+
+                        `;
+
+
+                        tabel.appendChild(
+                            baris
+                        );
+
+
+                        nomor++;
+
+                    }
+                );
+
+
+                pesan.textContent =
+                    "Data absensi berhasil dimuat.";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal mengambil data absensi:",
+                    error
+                );
+
+
+                tabel.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            style="
+                                padding: 20px;
+                                text-align: center;
+                                color: #dc2626;
+                            "
+                        >
+                            Gagal mengambil data absensi.
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                pesan.style.color =
+                    "#dc2626";
+
+                pesan.textContent =
+                    "Gagal mengambil data dari Firebase.";
+
+            }
+
+        }
+
+
+        // Jalankan saat halaman dibuka
+        tampilkanDaftarAbsensi();
+
+    </script>
 
 </body>
 
