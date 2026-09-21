@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Absensi QR</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="icon">👨‍🏫</div>
+
+            <h1>Absensi QR</h1>
+
+            <p>Buat Sesi Absensi</p>
+
+            <input
+                type="text"
+                id="mataKuliah"
+                placeholder="Nama Mata Kuliah"
+            >
+
+            <input
+                type="text"
+                id="pertemuan"
+                placeholder="Pertemuan ke-"
+            >
+
+            <button id="btnBuatQR">
+                Buat QR Absensi
+            </button>
+
+            <p id="pesanAdmin"></p>
+
+            <div id="hasilQR" style="display: none;">
+
+                <h2>QR Absensi</h2>
+
+                <p id="infoSesi"></p>
+
+                <div id="qrcode"></div>
+
+                <p>
+                    Tampilkan QR ini kepada mahasiswa
+                </p>
+
+            </div>
+
+            <button
+                id="btnLogout"
+                style="margin-top: 15px; background: #dc2626;"
+            >
+                Logout
+            </button>
+
+        </div>
+    </div>
+
+
+    <script type="module">
+
+        import { db, auth } from "./firebase-config.js";
+
+        import {
+            collection,
+            addDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        import {
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+
+        // =========================
+        // CEK LOGIN ADMIN
+        // =========================
+
+        onAuthStateChanged(auth, function(user) {
+
+            if (!user) {
+
+                // Belum login → kembali ke login
+                window.location.href = "login.html";
+
+            }
+
+        });
+
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        document
+            .getElementById("btnLogout")
+            .addEventListener("click", async function() {
+
+                try {
+
+                    await signOut(auth);
+
+                    window.location.href = "login.html";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert("Gagal logout.");
+
+                }
+
+            });
+
+
+        // =========================
+        // BUAT QR
+        // =========================
+
+        document
+            .getElementById("btnBuatQR")
+            .addEventListener("click", buatQR);
+
+
+        async function buatQR() {
+
+            const mataKuliah =
+                document.getElementById("mataKuliah").value.trim();
+
+            const pertemuan =
+                document.getElementById("pertemuan").value.trim();
+
+            const pesan =
+                document.getElementById("pesanAdmin");
+
+
+            if (mataKuliah === "" || pertemuan === "") {
+
+                pesan.style.color = "#dc2626";
+
+                pesan.textContent =
+                    "Silakan isi mata kuliah dan pertemuan.";
+
+                return;
+            }
+
+
+            const kodeSesi =
+                "ABSEN-" + Date.now();
+
+
+            try {
+
+                // Simpan sesi ke Firebase
+                await addDoc(
+                    collection(db, "sesi"),
+                    {
+
+                        kodeSesi: kodeSesi,
+
+                        mataKuliah: mataKuliah,
+
+                        pertemuan: pertemuan,
+
+                        tanggal: new Date()
+                            .toLocaleDateString("id-ID", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric"
+                            }),
+
+                        aktif: true,
+
+                        createdAt: serverTimestamp()
+
+                    }
+                );
+
+
+                // Hapus QR lama
+                document.getElementById("qrcode").innerHTML = "";
+
+
+                // Buat QR baru
+                new QRCode(
+                    document.getElementById("qrcode"),
+                    {
+                        text: kodeSesi,
+                        width: 250,
+                        height: 250
+                    }
+                );
+
+
+                document.getElementById("infoSesi").innerHTML =
+                    "<strong>" + mataKuliah + "</strong><br>" +
+                    "Pertemuan " + pertemuan;
+
+
+                document.getElementById("hasilQR").style.display =
+                    "block";
+
+
+                pesan.style.color = "#16a34a";
+
+                pesan.textContent =
+                    "Sesi berhasil dibuat dan disimpan.";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                pesan.style.color = "#dc2626";
+
+                pesan.textContent =
+                    "Gagal menyimpan sesi ke Firebase.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rekap Absensi</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* =========================
+           TAMPILAN REKAP
+        ========================= */
+
+        body {
+            background: #f4f7fb;
+        }
+
+        .rekap-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px 25px;
+        }
+
+        .rekap-box {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .rekap-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .rekap-header .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .rekap-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .rekap-header p {
+            color: #6b7280;
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           TOMBOL
+        ========================= */
+
+        .button-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .button-area button {
+            width: auto;
+            min-width: 150px;
+            padding: 12px 20px;
+        }
+
+        .btn-refresh {
+            background: #2563eb;
+        }
+
+        .btn-refresh:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-logout {
+            background: #dc2626;
+        }
+
+        .btn-logout:hover {
+            background: #b91c1c;
+        }
+
+        #pesanRekap {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           TABEL
+        ========================= */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #2563eb;
+        }
+
+        th {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 15px 12px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tbody tr:hover {
+            background: #eff6ff;
+        }
+
+        .status-hadir {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           HP
+        ========================= */
+
+        @media (max-width: 768px) {
+
+            .rekap-wrapper {
+                padding: 20px 10px;
+            }
+
+            .rekap-box {
+                padding: 20px 12px;
+                border-radius: 15px;
+            }
+
+            .rekap-header h1 {
+                font-size: 25px;
+            }
+
+            .button-area {
+                flex-direction: column;
+            }
+
+            .button-area button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="rekap-wrapper">
+
+        <div class="rekap-box">
+
+
+            <!-- HEADER -->
+
+            <div class="rekap-header">
+
+                <div class="icon">
+                    📋
+                </div>
+
+                <h1>
+                    Rekap Absensi
+                </h1>
+
+                <p>
+                    Daftar mahasiswa yang sudah melakukan absensi
+                </p>
+
+            </div>
+
+
+            <!-- TOMBOL -->
+
+            <div class="button-area">
+
+                <button
+                    id="btnRefresh"
+                    class="btn-refresh"
+                >
+                    🔄 Refresh Data
+                </button>
+
+
+                <button
+                    id="btnLogout"
+                    class="btn-logout"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+
+            <div id="pesanRekap"></div>
+
+
+            <!-- TABEL -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>No</th>
+
+                            <th>NIM</th>
+
+                            <th>Nama</th>
+
+                            <th>Mata Kuliah</th>
+
+                            <th>Pertemuan</th>
+
+                            <th>Tanggal</th>
+
+                            <th>Waktu</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tabelAbsensi">
+
+                        <tr>
+
+                            <td colspan="8">
+                                Memuat data...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         FIREBASE
+    ========================= -->
+
+    <script type="module">
+
+        import { db, auth }
+        from "./firebase-config.js";
+
+
+        import {
+
+            collection,
+            getDocs,
+            query,
+            orderBy
+
+        } from
+        "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+        import {
+
+            onAuthStateChanged,
+            signOut
+
+        } from
+        "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+
+
+        // =========================
+        // ELEMENT
+        // =========================
+
+        const tabelAbsensi =
+            document.getElementById(
+                "tabelAbsensi"
+            );
+
+
+        const pesanRekap =
+            document.getElementById(
+                "pesanRekap"
+            );
+
+
+        const btnRefresh =
+            document.getElementById(
+                "btnRefresh"
+            );
+
+
+        const btnLogout =
+            document.getElementById(
+                "btnLogout"
+            );
+
+
+
+        // =========================
+        // CEK LOGIN
+        // =========================
+
+        onAuthStateChanged(
+            auth,
+            function(user) {
+
+                if (!user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                tampilkanData();
+
+            }
+        );
+
+
+
+        // =========================
+        // REFRESH
+        // =========================
+
+        btnRefresh.addEventListener(
+            "click",
+            tampilkanData
+        );
+
+
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        btnLogout.addEventListener(
+            "click",
+            async function() {
+
+                try {
+
+                    await signOut(auth);
+
+                    window.location.href =
+                        "login.html";
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Gagal logout."
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        // =========================
+        // AMBIL DATA FIREBASE
+        // =========================
+
+        async function tampilkanData() {
+
+            tabelAbsensi.innerHTML = `
+
+                <tr>
+
+                    <td colspan="8">
+
+                        Memuat data...
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            pesanRekap.textContent = "";
+
+
+
+            try {
+
+                const absensiRef =
+                    collection(
+                        db,
+                        "absensi"
+                    );
+
+
+                const absensiQuery =
+                    query(
+                        absensiRef,
+                        orderBy(
+                            "createdAt",
+                            "desc"
+                        )
+                    );
+
+
+                const snapshot =
+                    await getDocs(
+                        absensiQuery
+                    );
+
+
+
+                // =========================
+                // BELUM ADA DATA
+                // =========================
+
+                if (snapshot.empty) {
+
+                    tabelAbsensi.innerHTML = `
+
+                        <tr>
+
+                            <td colspan="8">
+
+                                Belum ada data absensi.
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                    return;
+
+                }
+
+
+
+                // =========================
+                // TAMPILKAN DATA
+                // =========================
+
+                tabelAbsensi.innerHTML = "";
+
+
+                let nomor = 1;
+
+
+
+                snapshot.forEach(
+                    function(doc) {
+
+                        const data =
+                            doc.data();
+
+
+                        const baris =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        baris.innerHTML = `
+
+                            <td>
+                                ${nomor}
+                            </td>
+
+                            <td>
+                                ${data.nim || "-"}
+                            </td>
+
+                            <td>
+                                ${data.nama || "-"}
+                            </td>
+
+                            <td>
+                                ${data.mataKuliah || "-"}
+                            </td>
+
+                            <td>
+                                ${data.pertemuan || "-"}
+                            </td>
+
+                            <td>
+                                ${data.tanggal || "-"}
+                            </td>
+
+                            <td>
+                                ${data.waktu || "-"}
+                            </td>
+
+                            <td>
+
+                                <span class="status-hadir">
+
+                                    ${data.status || "HADIR"}
+
+                                </span>
+
+                            </td>
+
+                        `;
+
+
+                        tabelAbsensi.appendChild(
+                            baris
+                        );
+
+
+                        nomor++;
+
+                    }
+                );
+
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Gagal mengambil data:",
+                    error
+                );
+
+
+                tabelAbsensi.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="8">
+
+                            Gagal mengambil data absensi.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                pesanRekap.textContent =
+                    "Gagal mengambil data dari Firebase.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>

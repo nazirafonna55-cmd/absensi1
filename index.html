@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Absensi QR</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Library untuk membuat QR -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- HALAMAN AWAL -->
+    <div class="container" id="halamanAwal">
+
+        <div class="card">
+
+            <div class="icon">🎓</div>
+
+            <h1>Absensi QR</h1>
+
+            <p>Masukkan NPM untuk membuat QR Absensi</p>
+
+            <input
+                type="text"
+                id="nim"
+                placeholder="Masukkan NPM"
+            >
+
+            <button id="btnBuatQR">
+                Buat QR Absensi
+            </button>
+
+            <p id="pesan"></p>
+
+            <!-- QR YANG DIBUAT -->
+            <div id="bagianQR" style="display: none;">
+
+                <h2>QR Absensi</h2>
+
+                <p>
+                    Tampilkan QR ini pada layar lain,
+                    kemudian scan menggunakan kamera HP.
+                </p>
+
+                <div id="qrcode"></div>
+
+                <p>
+                    Scan QR untuk melakukan absensi.
+                </p>
+
+            </div>
+
+            <!-- SCANNER -->
+            <div id="scanner" style="display: none;"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- HALAMAN BERHASIL -->
+    <div
+        class="container"
+        id="halamanBerhasil"
+        style="display: none;"
+    >
+
+        <div class="card success-card">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h1>
+                Absensi Berhasil!
+            </h1>
+
+            <p class="success-text">
+                Data absensi kamu berhasil dicatat.
+            </p>
+
+            <div class="data-absensi">
+
+                <div class="data-row">
+                    <span>NPM</span>
+                    <strong id="hasilNim">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Nama</span>
+                    <strong id="hasilNama">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Mata Kuliah</span>
+                    <strong id="hasilMatkul">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Pertemuan</span>
+                    <strong id="hasilPertemuan">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Tanggal</span>
+                    <strong id="hasilTanggal">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Waktu</span>
+                    <strong id="hasilWaktu">-</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Status</span>
+                    <strong class="hadir">
+                        HADIR
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script
+        type="module"
+        src="script.js"
+    ></script>
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 35px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+h2 {
+    margin: 25px 0 15px;
+}
+
+p {
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 13px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #2563eb;
+}
+
+button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+#pesan {
+    margin-top: 15px;
+}
+
+#scanner {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#qrcode {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.success-card {
+    max-width: 450px;
+}
+
+.success-icon {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dcfce7;
+    color: #16a34a;
+
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.success-text {
+    color: #6b7280;
+}
+
+.data-absensi {
+    margin-top: 25px;
+    text-align: left;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.data-row span {
+    color: #6b7280;
+}
+
+.data-row strong {
+    text-align: right;
+}
+
+.hadir {
+    color: #16a34a;
+}

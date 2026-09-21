@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login Admin - Absensi QR</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="card login-card">
+
+            <div class="icon">🔐</div>
+
+            <h1>Login Admin</h1>
+
+            <p>Masuk untuk mengelola absensi</p>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email Admin"
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+            >
+
+            <button id="btnLogin">
+                Login
+            </button>
+
+            <p id="pesanLogin"></p>
+
+        </div>
+
+    </div>
+
+
+    <script type="module">
+
+        import { auth } from "./firebase-config.js";
+
+        import {
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+
+        const btnLogin =
+            document.getElementById("btnLogin");
+
+        const pesanLogin =
+            document.getElementById("pesanLogin");
+
+
+        btnLogin.addEventListener(
+            "click",
+            loginAdmin
+        );
+
+
+        async function loginAdmin() {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+
+            if (email === "" || password === "") {
+
+                pesanLogin.style.color = "#dc2626";
+
+                pesanLogin.textContent =
+                    "Email dan password harus diisi.";
+
+                return;
+            }
+
+
+            try {
+
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+
+                pesanLogin.style.color = "#16a34a";
+
+                pesanLogin.textContent =
+                    "Login berhasil. Membuka halaman admin...";
+
+
+                setTimeout(function() {
+
+                    window.location.href =
+                        "admin.html";
+
+                }, 1000);
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                pesanLogin.style.color = "#dc2626";
+
+                pesanLogin.textContent =
+                    "Email atau password salah.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
