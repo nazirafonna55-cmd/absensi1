@@ -42,8 +42,6 @@ async function buatQR() {
     const pesan =
         document.getElementById("pesan");
 
-
-    // Cek NPM
     if (nim === "") {
 
         pesan.style.color = "#dc2626";
@@ -54,12 +52,10 @@ async function buatQR() {
         return;
     }
 
-
     pesan.style.color = "#2563eb";
 
     pesan.textContent =
         "Memeriksa NPM...";
-
 
     try {
 
@@ -73,7 +69,6 @@ async function buatQR() {
         const mahasiswaSnap =
             await getDoc(mahasiswaRef);
 
-
         if (!mahasiswaSnap.exists()) {
 
             pesan.style.color = "#dc2626";
@@ -84,8 +79,6 @@ async function buatQR() {
             return;
         }
 
-
-        // Simpan data mahasiswa
         const dataMahasiswa =
             mahasiswaSnap.data();
 
@@ -108,7 +101,6 @@ async function buatQR() {
         const sesiSnapshot =
             await getDocs(sesiQuery);
 
-
         if (sesiSnapshot.empty) {
 
             pesan.style.color = "#dc2626";
@@ -128,7 +120,6 @@ async function buatQR() {
 
         const dataSesi =
             sesiDoc.data();
-
 
         const kodeSesi =
             dataSesi.kodeSesi;
@@ -171,7 +162,6 @@ async function buatQR() {
         pesan.textContent =
             "QR berhasil dibuat. Silakan scan QR tersebut.";
 
-
     } catch (error) {
 
         console.error(
@@ -184,7 +174,6 @@ async function buatQR() {
         pesan.textContent =
             "Terjadi kesalahan saat membuat QR.";
     }
-
 }
 
 
@@ -197,10 +186,8 @@ function mulaiScan() {
     const pesan =
         document.getElementById("pesan");
 
-
     document.getElementById("scanner")
         .style.display = "block";
-
 
     pesan.style.color = "#2563eb";
 
@@ -248,7 +235,6 @@ function mulaiScan() {
             "Kamera tidak dapat dibuka. Izinkan akses kamera.";
 
     });
-
 }
 
 
@@ -274,7 +260,6 @@ async function prosesScan(qrCodeMessage) {
                 );
 
             }
-
         }
 
 
@@ -284,7 +269,6 @@ async function prosesScan(qrCodeMessage) {
 
         const dataQR =
             JSON.parse(qrCodeMessage);
-
 
         const kodeSesi =
             dataQR.kodeSesi;
@@ -426,7 +410,6 @@ async function prosesScan(qrCodeMessage) {
                 ),
 
                 {
-
                     nim: npm,
 
                     nama: nama,
@@ -451,13 +434,11 @@ async function prosesScan(qrCodeMessage) {
 
                     createdAt:
                         serverTimestamp()
-
                 },
 
                 {
                     merge: false
                 }
-
             );
 
         } catch (error) {
@@ -482,7 +463,6 @@ async function prosesScan(qrCodeMessage) {
                 alert(
                     "Gagal menyimpan absensi ke Firebase."
                 );
-
             }
 
             return;
@@ -540,7 +520,6 @@ async function prosesScan(qrCodeMessage) {
         ).style.display =
             "flex";
 
-
     } catch (error) {
 
         console.error(
@@ -551,9 +530,7 @@ async function prosesScan(qrCodeMessage) {
         alert(
             "QR tidak valid atau terjadi kesalahan."
         );
-
     }
-
 }
 
 
@@ -564,11 +541,14 @@ async function prosesScan(qrCodeMessage) {
 const tombolScan =
     document.createElement("button");
 
+
 tombolScan.textContent =
     "📷 Scan QR";
 
+
 tombolScan.style.marginTop =
     "15px";
+
 
 tombolScan.addEventListener(
     "click",
