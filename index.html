@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -9,6 +10,7 @@
 
     <link rel="stylesheet" href="style.css">
 
+    <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 
@@ -29,7 +31,6 @@
             </div>
 
             <nav>
-
                 <a href="#beranda" class="active">
                     🏠 Beranda
                 </a>
@@ -41,7 +42,6 @@
                 <a href="#daftar">
                     📋 Daftar Absen
                 </a>
-
             </nav>
 
             <div class="firebase-status">
@@ -52,22 +52,18 @@
         </aside>
 
 
-        <!-- KONTEN -->
+        <!-- KONTEN UTAMA -->
         <main class="main-content">
 
             <!-- HEADER -->
             <header class="topbar">
 
                 <div>
-
-                    <h1>
-                        Absensi QR
-                    </h1>
+                    <h1>Absensi QR</h1>
 
                     <p>
                         Sistem Presensi Mahasiswa Berbasis QR Code
                     </p>
-
                 </div>
 
                 <div class="status-online">
@@ -81,13 +77,9 @@
                  FORM NIM
             ========================== -->
 
-            <section
-                class="hero-card"
-                id="beranda"
-            >
+            <section class="hero-card" id="beranda">
 
                 <div class="hero-decoration decoration-one"></div>
-
                 <div class="hero-decoration decoration-two"></div>
 
                 <div class="hero-icon">
@@ -102,7 +94,6 @@
                     Masukkan NIM / NPM kamu untuk
                     melanjutkan proses absensi.
                 </p>
-
 
                 <div class="input-group">
 
@@ -119,37 +110,26 @@
 
                 </div>
 
-
                 <button
                     id="btnBuatQR"
                     class="btn-primary"
                     type="button"
                 >
-
                     ▦ &nbsp; Buat QR Absensi
-
-                    <span>
-                        →
-                    </span>
-
+                    <span>→</span>
                 </button>
-
 
                 <p
                     id="pesan"
                     class="pesan"
                 ></p>
 
-
                 <div class="info-box">
-
                     ℹ️
-
                     <span>
                         Pastikan NIM yang kamu masukkan
                         sudah terdaftar di sistem.
                     </span>
-
                 </div>
 
             </section>
@@ -171,20 +151,15 @@
                     </div>
 
                     <div>
-
-                        <h2>
-                            QR Absensi
-                        </h2>
+                        <h2>QR Absensi</h2>
 
                         <p>
                             Tampilkan QR kemudian scan
                             menggunakan HP.
                         </p>
-
                     </div>
 
                 </div>
-
 
                 <div
                     id="bagianQR"
@@ -200,9 +175,7 @@
 
                 </div>
 
-
                 <!-- SCANNER -->
-
                 <div
                     id="scanner"
                     class="scanner"
@@ -228,7 +201,6 @@
                     </div>
 
                     <div>
-
                         <h2>
                             Daftar Mahasiswa Sudah Absen
                         </h2>
@@ -237,7 +209,6 @@
                             Data mahasiswa yang sudah
                             melakukan absensi.
                         </p>
-
                     </div>
 
                 </div>
@@ -254,7 +225,6 @@
                         </div>
 
                         <div>
-
                             <small>
                                 Total Absensi
                             </small>
@@ -262,11 +232,9 @@
                             <strong id="totalHadir">
                                 0
                             </strong>
-
                         </div>
 
                     </div>
-
 
                     <div class="stat-card green">
 
@@ -275,7 +243,6 @@
                         </div>
 
                         <div>
-
                             <small>
                                 Status
                             </small>
@@ -283,11 +250,9 @@
                             <strong>
                                 HADIR
                             </strong>
-
                         </div>
 
                     </div>
-
 
                     <div class="stat-card cream">
 
@@ -296,7 +261,6 @@
                         </div>
 
                         <div>
-
                             <small>
                                 Sistem
                             </small>
@@ -304,7 +268,6 @@
                             <strong>
                                 Aktif
                             </strong>
-
                         </div>
 
                     </div>
@@ -312,61 +275,31 @@
                 </div>
 
 
-                <!-- TABEL -->
+                <!-- TABEL ABSENSI -->
 
                 <div class="table-wrapper">
 
                     <table>
 
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    No
-                                </th>
-
-                                <th>
-                                    NPM
-                                </th>
-
-                                <th>
-                                    Nama
-                                </th>
-
-                                <th>
-                                    Mata Kuliah
-                                </th>
-
-                                <th>
-                                    Pertemuan
-                                </th>
-
-                                <th>
-                                    Tanggal
-                                </th>
-
-                                <th>
-                                    Waktu
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
+                                <th>No</th>
+                                <th>NPM</th>
+                                <th>Nama</th>
+                                <th>Mata Kuliah</th>
+                                <th>Pertemuan</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Status</th>
                             </tr>
-
                         </thead>
-
 
                         <tbody id="daftarAbsensi">
 
                             <tr>
-
                                 <td colspan="8">
                                     Memuat data absensi...
                                 </td>
-
                             </tr>
 
                         </tbody>
@@ -381,13 +314,9 @@
             <!-- FOOTER -->
 
             <footer>
-
                 © 2026 Absensi QR
-
                 <br>
-
                 Sistem Presensi Mahasiswa Berbasis QR Code
-
             </footer>
 
         </main>
@@ -425,101 +354,46 @@
             <div class="data-absensi">
 
                 <div class="data-row">
-
-                    <span>
-                        👤 NPM
-                    </span>
-
-                    <strong id="hasilNim">
-                        -
-                    </strong>
-
+                    <span>👤 NPM</span>
+                    <strong id="hasilNim">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        🎓 Nama
-                    </span>
-
-                    <strong id="hasilNama">
-                        -
-                    </strong>
-
+                    <span>🎓 Nama</span>
+                    <strong id="hasilNama">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        📚 Mata Kuliah
-                    </span>
-
-                    <strong id="hasilMatkul">
-                        -
-                    </strong>
-
+                    <span>📚 Mata Kuliah</span>
+                    <strong id="hasilMatkul">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        📝 Pertemuan
-                    </span>
-
-                    <strong id="hasilPertemuan">
-                        -
-                    </strong>
-
+                    <span>📝 Pertemuan</span>
+                    <strong id="hasilPertemuan">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        📅 Tanggal
-                    </span>
-
-                    <strong id="hasilTanggal">
-                        -
-                    </strong>
-
+                    <span>📅 Tanggal</span>
+                    <strong id="hasilTanggal">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        🕐 Waktu
-                    </span>
-
-                    <strong id="hasilWaktu">
-                        -
-                    </strong>
-
+                    <span>🕐 Waktu</span>
+                    <strong id="hasilWaktu">-</strong>
                 </div>
 
-
                 <div class="data-row">
-
-                    <span>
-                        ✓ Status
-                    </span>
-
+                    <span>✓ Status</span>
                     <strong class="hadir">
                         HADIR
                     </strong>
-
                 </div>
 
             </div>
 
 
-            <!-- =========================
-                 TOMBOL LIHAT DAFTAR ABSENSI
-            ========================== -->
+            <!-- TOMBOL LIHAT DAFTAR ABSENSI -->
 
             <button
                 type="button"
@@ -535,7 +409,7 @@
 
 
     <!-- =========================
-         FUNGSI KEMBALI KE HALAMAN AWAL
+         FUNGSI TOMBOL KEMBALI
     ========================== -->
 
     <script>
@@ -634,15 +508,10 @@
         import { db } from "./firebase-config.js";
 
         import {
-
             collection,
-
             onSnapshot,
-
             query,
-
             orderBy
-
         } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
@@ -660,22 +529,19 @@
 
         /*
          * Mengambil data absensi dari Firebase
-         * dan memperbaruinya secara REAL-TIME.
+         * dan memperbarui tabel secara REAL-TIME.
          */
 
         const absensiQuery =
             query(
-
                 collection(
                     db,
                     "absensi"
                 ),
-
                 orderBy(
                     "createdAt",
                     "desc"
                 )
-
             );
 
 
@@ -688,53 +554,38 @@
                 tabel.innerHTML = "";
 
 
-                /*
-                 * Jika belum ada absensi
-                 */
+                // Jika belum ada absensi
 
                 if (snapshot.empty) {
 
                     tabel.innerHTML = `
-
                         <tr>
-
                             <td colspan="8">
-
                                 Belum ada mahasiswa
                                 yang melakukan absensi.
-
                             </td>
-
                         </tr>
-
                     `;
 
-
                     totalHadir.textContent = "0";
-
 
                     return;
 
                 }
 
 
-                /*
-                 * Menampilkan jumlah absensi
-                 */
+                // Menampilkan jumlah absensi
 
                 totalHadir.textContent =
                     snapshot.size;
 
 
-                /*
-                 * Menampilkan data mahasiswa
-                 */
+                // Menampilkan data mahasiswa
 
                 let nomor = 1;
 
 
                 snapshot.forEach(
-
                     (dokumen) => {
 
                         const data =
@@ -778,13 +629,9 @@
                             </td>
 
                             <td>
-
                                 <span class="status-hadir">
-
                                     ${data.status || "HADIR"}
-
                                 </span>
-
                             </td>
 
                         `;
@@ -798,15 +645,12 @@
                         nomor++;
 
                     }
-
                 );
 
             },
 
 
-            /*
-             * Jika Firebase mengalami error
-             */
+            // Jika Firebase mengalami error
 
             (error) => {
 
@@ -817,17 +661,11 @@
 
 
                 tabel.innerHTML = `
-
                     <tr>
-
                         <td colspan="8">
-
                             Gagal mengambil data absensi.
-
                         </td>
-
                     </tr>
-
                 `;
 
             }
