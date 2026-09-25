@@ -31,6 +31,26 @@ document
 
 
 // ===============================
+// TOMBOL SCAN QR
+// ===============================
+
+document
+    .getElementById("btnScan")
+    .addEventListener("click", mulaiScan);
+
+
+// ===============================
+// HELPER: SET PESAN
+// ===============================
+
+function setPesan(teks, tipe = "info") {
+    const pesan = document.getElementById("pesan");
+    pesan.className = "pesan " + tipe;
+    pesan.textContent = teks;
+}
+
+
+// ===============================
 // BUAT QR
 // ===============================
 
@@ -39,23 +59,12 @@ async function buatQR() {
     const nim =
         document.getElementById("nim").value.trim();
 
-    const pesan =
-        document.getElementById("pesan");
-
     if (nim === "") {
-
-        pesan.style.color = "#dc2626";
-
-        pesan.textContent =
-            "Silakan masukkan NPM terlebih dahulu.";
-
+        setPesan("Silakan masukkan NPM terlebih dahulu.", "error");
         return;
     }
 
-    pesan.style.color = "#2563eb";
-
-    pesan.textContent =
-        "Memeriksa NPM...";
+    setPesan("Memeriksa NPM...", "info");
 
     try {
 
@@ -63,83 +72,53 @@ async function buatQR() {
         // CEK MAHASISWA
         // ===============================
 
-        const mahasiswaRef =
-            doc(db, "mahasiswa", nim);
-
-        const mahasiswaSnap =
-            await getDoc(mahasiswaRef);
+        const mahasiswaRef = doc(db, "mahasiswa", nim);
+        const mahasiswaSnap = await getDoc(mahasiswaRef);
 
         if (!mahasiswaSnap.exists()) {
-
-            pesan.style.color = "#dc2626";
-
-            pesan.textContent =
-                "NPM belum terdaftar di Firebase.";
-
+            setPesan("NPM belum terdaftar di Firebase.", "error");
             return;
         }
 
-        const dataMahasiswa =
-            mahasiswaSnap.data();
+        const dataMahasiswa = mahasiswaSnap.data();
 
         npmMahasiswa = nim;
-
-        namaMahasiswa =
-            dataMahasiswa.nama || "Mahasiswa";
+        namaMahasiswa = dataMahasiswa.nama || "Mahasiswa";
 
 
         // ===============================
         // CARI SESI AKTIF
         // ===============================
 
-        const sesiQuery =
-            query(
-                collection(db, "sesi"),
-                where("aktif", "==", true)
-            );
+        const sesiQuery = query(
+            collection(db, "sesi"),
+            where("aktif", "==", true)
+        );
 
-        const sesiSnapshot =
-            await getDocs(sesiQuery);
+        const sesiSnapshot = await getDocs(sesiQuery);
 
         if (sesiSnapshot.empty) {
-
-            pesan.style.color = "#dc2626";
-
-            pesan.textContent =
-                "Belum ada sesi absensi yang aktif.";
-
+            setPesan("Belum ada sesi absensi yang aktif.", "error");
             return;
         }
 
-
         // Ambil sesi terbaru
-        const sesiDoc =
-            sesiSnapshot.docs[
-                sesiSnapshot.docs.length - 1
-            ];
-
-        const dataSesi =
-            sesiDoc.data();
-
-        const kodeSesi =
-            dataSesi.kodeSesi;
+        const sesiDoc = sesiSnapshot.docs[sesiSnapshot.docs.length - 1];
+        const dataSesi = sesiDoc.data();
+        const kodeSesi = dataSesi.kodeSesi;
 
 
         // ===============================
         // BUAT DATA QR
         // ===============================
 
-        const dataQR =
-            JSON.stringify({
-                kodeSesi: kodeSesi,
-                npm: npmMahasiswa
-            });
-
+        const dataQR = JSON.stringify({
+            kodeSesi: kodeSesi,
+            npm: npmMahasiswa
+        });
 
         // Bersihkan QR sebelumnya
-        document.getElementById("qrcode").innerHTML =
-            "";
-
+        document.getElementById("qrcode").innerHTML = "";
 
         // Buat QR
         new QRCode(
@@ -151,28 +130,18 @@ async function buatQR() {
             }
         );
 
-
         // Tampilkan QR
-        document.getElementById("bagianQR")
-            .style.display = "block";
+        document.getElementById("bagianQR").style.display = "block";
 
-
-        pesan.style.color = "#16a34a";
-
-        pesan.textContent =
-            "QR berhasil dibuat. Silakan scan QR tersebut.";
+        setPesan(
+            "QR berhasil dibuat. Silakan scan QR tersebut.",
+            "success"
+        );
 
     } catch (error) {
 
-        console.error(
-            "Gagal membuat QR:",
-            error
-        );
-
-        pesan.style.color = "#dc2626";
-
-        pesan.textContent =
-            "Terjadi kesalahan saat membuat QR.";
+        console.error("Gagal membuat QR:", error);
+        setPesan("Terjadi kesalahan saat membuat QR.", "error");
     }
 }
 
@@ -183,57 +152,35 @@ async function buatQR() {
 
 function mulaiScan() {
 
-    const pesan =
-        document.getElementById("pesan");
+    document.getElementById("scanner").style.display = "block";
 
-    document.getElementById("scanner")
-        .style.display = "block";
+    setPesan("Arahkan kamera ke QR Absensi...", "info");
 
-    pesan.style.color = "#2563eb";
-
-    pesan.textContent =
-        "Arahkan kamera ke QR Absensi...";
-
-
-    html5QrCode =
-        new Html5Qrcode("scanner");
-
+    html5QrCode = new Html5Qrcode("scanner");
 
     html5QrCode.start(
-
-        {
-            facingMode: "environment"
-        },
-
+        { facingMode: "environment" },
         {
             fps: 10,
-            qrbox: {
-                width: 250,
-                height: 250
+            qrbox: function(viewfinderWidth, viewfinderHeight) {
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const size = Math.floor(minEdge * 0.7);
+                return { width: size, height: size };
             }
         },
-
-        function(qrCodeMessage) {
-
+        function (qrCodeMessage) {
             prosesScan(qrCodeMessage);
-
         },
-
-        function(errorMessage) {
-
+        function (errorMessage) {
             // Abaikan error scan sementara
-
         }
-
-    ).catch(function(error) {
+    ).catch(function (error) {
 
         console.error(error);
-
-        pesan.style.color = "#dc2626";
-
-        pesan.textContent =
-            "Kamera tidak dapat dibuka. Izinkan akses kamera.";
-
+        setPesan(
+            "Kamera tidak dapat dibuka. Izinkan akses kamera.",
+            "error"
+        );
     });
 }
 
@@ -248,152 +195,82 @@ async function prosesScan(qrCodeMessage) {
 
         // Hentikan scanner
         if (html5QrCode) {
-
             try {
-
                 await html5QrCode.stop();
-
-            } catch (error) {
-
-                console.log(
-                    "Scanner sudah berhenti."
-                );
-
+            } catch (e) {
+                // scanner sudah berhenti, abaikan
             }
         }
-
 
         // ===============================
         // BACA DATA QR
         // ===============================
 
-        const dataQR =
-            JSON.parse(qrCodeMessage);
-
-        const kodeSesi =
-            dataQR.kodeSesi;
-
-        const npm =
-            dataQR.npm;
-
+        const dataQR = JSON.parse(qrCodeMessage);
+        const kodeSesi = dataQR.kodeSesi;
+        const npm = dataQR.npm;
 
         if (!kodeSesi || !npm) {
-
-            alert(
-                "QR tidak valid."
-            );
-
+            setPesan("QR tidak valid.", "error");
             return;
         }
-
 
         // ===============================
         // CEK SESI
         // ===============================
 
-        const sesiQuery =
-            query(
-                collection(db, "sesi"),
-                where(
-                    "kodeSesi",
-                    "==",
-                    kodeSesi
-                )
-            );
+        const sesiQuery = query(
+            collection(db, "sesi"),
+            where("kodeSesi", "==", kodeSesi)
+        );
 
-
-        const sesiSnapshot =
-            await getDocs(sesiQuery);
-
+        const sesiSnapshot = await getDocs(sesiQuery);
 
         if (sesiSnapshot.empty) {
-
-            alert(
-                "Sesi absensi tidak ditemukan."
-            );
-
+            setPesan("Sesi absensi tidak ditemukan.", "error");
             return;
         }
 
-
-        const dataSesi =
-            sesiSnapshot.docs[0].data();
-
+        const dataSesi = sesiSnapshot.docs[0].data();
 
         // ===============================
         // CEK MAHASISWA
         // ===============================
 
-        const mahasiswaRef =
-            doc(
-                db,
-                "mahasiswa",
-                npm
-            );
-
-
-        const mahasiswaSnap =
-            await getDoc(
-                mahasiswaRef
-            );
-
+        const mahasiswaRef = doc(db, "mahasiswa", npm);
+        const mahasiswaSnap = await getDoc(mahasiswaRef);
 
         if (!mahasiswaSnap.exists()) {
-
-            alert(
-                "NPM belum terdaftar."
-            );
-
+            setPesan("NPM belum terdaftar.", "error");
             return;
         }
 
-
-        const dataMahasiswa =
-            mahasiswaSnap.data();
-
-
-        const nama =
-            dataMahasiswa.nama ||
-            "Mahasiswa";
-
+        const dataMahasiswa = mahasiswaSnap.data();
+        const nama = dataMahasiswa.nama || "Mahasiswa";
 
         // ===============================
         // WAKTU
         // ===============================
 
-        const sekarang =
-            new Date();
+        const sekarang = new Date();
 
+        const tanggal = sekarang.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        });
 
-        const tanggal =
-            sekarang.toLocaleDateString(
-                "id-ID",
-                {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
-                }
-            );
-
-
-        const waktu =
-            sekarang.toLocaleTimeString(
-                "id-ID",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                }
-            );
-
+        const waktu = sekarang.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
 
         // ===============================
         // ID ABSENSI
         // ===============================
 
-        const idAbsensi =
-            npm + "_" + kodeSesi;
-
+        const idAbsensi = npm + "_" + kodeSesi;
 
         // ===============================
         // SIMPAN ABSENSI
@@ -402,160 +279,95 @@ async function prosesScan(qrCodeMessage) {
         try {
 
             await setDoc(
-
-                doc(
-                    db,
-                    "absensi",
-                    idAbsensi
-                ),
-
+                doc(db, "absensi", idAbsensi),
                 {
                     nim: npm,
-
                     nama: nama,
-
-                    mataKuliah:
-                        dataSesi.mataKuliah,
-
-                    pertemuan:
-                        dataSesi.pertemuan,
-
-                    kodeQR:
-                        kodeSesi,
-
-                    tanggal:
-                        tanggal,
-
-                    waktu:
-                        waktu,
-
-                    status:
-                        "HADIR",
-
-                    createdAt:
-                        serverTimestamp()
+                    mataKuliah: dataSesi.mataKuliah || "-",
+                    pertemuan: dataSesi.pertemuan || "-",
+                    kodeQR: kodeSesi,
+                    tanggal: tanggal,
+                    waktu: waktu,
+                    status: "HADIR",
+                    createdAt: serverTimestamp()
                 },
-
-                {
-                    merge: false
-                }
+                { merge: false }
             );
 
         } catch (error) {
 
-            console.error(
-                "Gagal menyimpan:",
-                error
-            );
+            console.error("Gagal menyimpan:", error);
 
-
-            if (
-                error.code ===
-                "permission-denied"
-            ) {
-
-                alert(
-                    "NPM ini sudah melakukan absensi untuk sesi tersebut."
+            if (error.code === "permission-denied") {
+                setPesan(
+                    "NPM ini sudah melakukan absensi untuk sesi tersebut.",
+                    "error"
                 );
-
             } else {
-
-                alert(
-                    "Gagal menyimpan absensi ke Firebase."
+                setPesan(
+                    "Gagal menyimpan absensi ke Firebase.",
+                    "error"
                 );
             }
 
             return;
         }
 
-
         // ===============================
         // TAMPILKAN HASIL
         // ===============================
 
-        document.getElementById(
-            "hasilNim"
-        ).textContent =
-            npm;
+        document.getElementById("hasilNim").textContent = npm;
+        document.getElementById("hasilNama").textContent = nama;
+        document.getElementById("hasilMatkul").textContent = dataSesi.mataKuliah || "-";
+        document.getElementById("hasilPertemuan").textContent = dataSesi.pertemuan || "-";
+        document.getElementById("hasilTanggal").textContent = tanggal;
+        document.getElementById("hasilWaktu").textContent = waktu;
 
-
-        document.getElementById(
-            "hasilNama"
-        ).textContent =
-            nama;
-
-
-        document.getElementById(
-            "hasilMatkul"
-        ).textContent =
-            dataSesi.mataKuliah;
-
-
-        document.getElementById(
-            "hasilPertemuan"
-        ).textContent =
-            dataSesi.pertemuan;
-
-
-        document.getElementById(
-            "hasilTanggal"
-        ).textContent =
-            tanggal;
-
-
-        document.getElementById(
-            "hasilWaktu"
-        ).textContent =
-            waktu;
-
-
-        document.getElementById(
-            "halamanAwal"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "halamanBerhasil"
-        ).style.display =
-            "flex";
+        document.getElementById("halamanAwal").style.display = "none";
+        document.getElementById("halamanBerhasil").style.display = "flex";
 
     } catch (error) {
 
-        console.error(
-            "QR tidak dapat diproses:",
-            error
-        );
-
-        alert(
-            "QR tidak valid atau terjadi kesalahan."
-        );
+        console.error("QR tidak dapat diproses:", error);
+        setPesan("QR tidak valid atau terjadi kesalahan.", "error");
     }
 }
 
 
 // ===============================
-// TOMBOL SCAN
+// KEMBALI KE HALAMAN AWAL
 // ===============================
 
-const tombolScan =
-    document.createElement("button");
+window.kembaliKeHalamanAwal = function () {
 
+    // Sembunyikan halaman berhasil
+    document.getElementById("halamanBerhasil").style.display = "none";
 
-tombolScan.textContent =
-    "📷 Scan QR";
+    // Tampilkan halaman utama
+    document.getElementById("halamanAwal").style.display = "block";
 
+    // Bersihkan NPM
+    document.getElementById("nim").value = "";
 
-tombolScan.style.marginTop =
-    "15px";
+    // Bersihkan pesan
+    const pesan = document.getElementById("pesan");
+    pesan.className = "pesan";
+    pesan.textContent = "";
 
+    // Sembunyikan QR
+    document.getElementById("bagianQR").style.display = "none";
 
-tombolScan.addEventListener(
-    "click",
-    mulaiScan
-);
+    // Bersihkan QR
+    document.getElementById("qrcode").innerHTML = "";
 
+    // Sembunyikan scanner
+    document.getElementById("scanner").style.display = "none";
 
-document
-    .getElementById("bagianQR")
-    .appendChild(tombolScan);
+    // Scroll ke daftar absensi
+    setTimeout(function () {
+        document.getElementById("daftar").scrollIntoView({
+            behavior: "smooth"
+        });
+    }, 300);
+};
